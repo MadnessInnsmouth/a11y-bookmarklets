@@ -1,0 +1,483 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* CSS Variables */
+:root {
+    --primary-color: #1a365d; /* Dark blue */
+    --secondary-color: #2b77ad; /* Medium blue */
+    --accent-color: #38a169; /* Green for highlights/success */
+    --success-color: #48bb78; /* Slightly lighter green */
+    --warning-color: #ed8936; /* Orange for warnings/highlights */
+    --text-color: #2d3748; /* Dark grey for body text */
+    --text-light: #4a5568; /* Lighter grey for secondary text */
+    --bg-light: #f7fafc; /* Very light background */
+    --bg-card: #ffffff; /* White for cards */
+    --border-color: #e2e8f0; /* Light border grey */
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* Subtle shadow */
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Larger shadow */
+
+    /* New variables for bookmarklet tools */
+    --bookmarklet-heading-outline: #E53E3E; /* Red */
+    --bookmarklet-heading-label-bg: #ECC94B; /* Yellow */
+    --bookmarklet-heading-label-text: #2D3748; /* Dark grey */
+    --bookmarklet-heading-warning-bg: #C53030; /* Crimson */
+
+    --bookmarklet-landmark-outline: #3182CE; /* Blue */
+    --bookmarklet-landmark-tag-bg: #3182CE; /* Blue */
+
+    --bookmarklet-alt-good-outline: #38A169; /* Green */
+    --bookmarklet-alt-missing-outline: #E53E3E; /* Red */
+    --bookmarklet-alt-empty-outline: #ED8936; /* Orange */
+}
+
+/* Body Styles */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--bg-light);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Links (General) */
+a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover, a:focus {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* Skip Link */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 6px;
+    background: var(--primary-color);
+    color: white;
+    padding: 8px 16px;
+    text-decoration: none;
+    z-index: 1000;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+.skip-link:focus {
+    top: 6px;
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Header */
+header {
+    background: linear-gradient(135deg, var(--primary-color), #2c5282);
+    color: white;
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+}
+
+.site-title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    margin-bottom: 0.2rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.site-tagline {
+    font-size: clamp(1rem, 2vw, 1.2rem);
+    opacity: 0.9;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Main Content */
+main {
+    min-height: calc(100vh - 140px);
+    padding: 2rem 0;
+}
+
+/* Typography */
+h1 {
+    font-size: clamp(2.8rem, 6vw, 4rem);
+    margin-bottom: 0.8rem;
+    color: var(--primary-color);
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+h2 {
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    margin: 3rem 0 1.5rem 0;
+    color: var(--primary-color);
+    border-bottom: 3px solid var(--secondary-color);
+    padding-bottom: 0.5rem;
+}
+
+h2:first-of-type {
+    margin-top: 2rem;
+}
+
+h3 {
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
+    margin: 2rem 0 1rem 0;
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+p {
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+    max-width: 75ch; /* Good for readability */
+    line-height: 1.7;
+}
+
+/* Sections */
+.hero-section {
+    background: linear-gradient(135deg, var(--bg-card) 0%, #f0f4f8 100%);
+    background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='0.1' fill-rule='evenodd'%3E%3Cpath d='M.005 0h2v2h-2V0zm0 4h2v2h-2V4zM4.005 0h2v2h-2V0zm0 4h2v2h-2V4z'/%3E%3Cg%3E%3C/svg%3E"), linear-gradient(135deg, var(--bg-card) 0%, #f0f4f8 100%);
+    background-repeat: repeat;
+    padding: 5rem 2rem;
+    border-radius: 16px;
+    margin-bottom: 4rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-lg);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--secondary-color), var(--accent-color));
+}
+
+.hero-title {
+    color: var(--secondary-color);
+    font-size: clamp(1.8rem, 3vw, 2.5rem); /* Adjusted for hero section h2 */
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    border-bottom: none; /* Override general h2 border */
+    padding-bottom: 0; /* Override general h2 padding */
+}
+
+.hero-description {
+    font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+    max-width: 65ch;
+    margin: 0 auto 2rem auto;
+    color: var(--text-light);
+}
+
+.cta-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.card {
+    background: var(--bg-card);
+    padding: 2.5rem;
+    border-radius: 12px;
+    margin: 2rem 0;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+/* Buttons (General) */
+.btn {
+    display: inline-block;
+    padding: 0.875rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    font-family: inherit;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, var(--secondary-color), #3182ce);
+    color: white;
+    box-shadow: var(--shadow);
+}
+.btn-primary:hover,
+.btn-primary:focus {
+    background: linear-gradient(135deg, #2c5282, var(--secondary-color));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.btn-secondary {
+    background: none;
+    border: 2px solid var(--secondary-color);
+    color: var(--secondary-color);
+}
+.btn-secondary:hover,
+.btn-secondary:focus {
+    background: var(--secondary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.btn-success {
+    background: linear-gradient(135deg, var(--success-color), #38a169);
+    color: white;
+    box-shadow: var(--shadow);
+}
+
+.btn-success:hover,
+.btn-success:focus {
+    background: linear-gradient(135deg, #2f855a, var(--success-color));
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    outline: 2px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+.btn-tertiary {
+    background: var(--bg-light);
+    color: var(--text-light);
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow);
+    padding: 0.6rem 1.2rem; /* Slightly smaller for copy button */
+    font-size: 0.95rem;
+}
+.btn-tertiary:hover,
+.btn-tertiary:focus {
+    background: var(--border-color);
+    color: var(--primary-color);
+    transform: translateY(-1px);
+    box-shadow: var(--shadow-lg);
+    outline: 2px solid var(--secondary-color);
+    outline-offset: 2px;
+}
+
+/* Bookmarklet Specific Styles */
+.bookmarklet-card h3 {
+    margin-top: 0;
+    margin-bottom: 0.8rem;
+}
+
+.bookmarklet-card .description,
+.bookmarklet-card .use-case {
+    font-size: 1rem;
+    color: var(--text-light);
+    margin-bottom: 0.8rem;
+}
+
+.bookmarklet-card .use-case strong {
+    color: var(--primary-color);
+}
+
+.bookmarklet-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    align-items: center;
+    margin-top: 1.5rem;
+}
+
+.bookmarklet-link {
+    flex-grow: 1; /* Allow it to take up available space */
+    min-width: 250px; /* Ensure it's large enough to drag */
+    padding: 1rem 1.5rem; /* Make it chunky for drag-and-drop */
+    font-size: 1.05rem;
+    background: var(--accent-color);
+    color: white;
+    border: 1px dashed rgba(255,255,255,0.5); /* Indicate drag target */
+    box-shadow: var(--shadow);
+}
+
+.bookmarklet-link:hover,
+.bookmarklet-link:focus {
+    background: var(--success-color);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+    outline: 2px solid white; /* White outline on hover */
+    outline-offset: 2px;
+    text-decoration: none; /* Ensure no underline on hover */
+}
+
+.note {
+    font-size: 0.95rem;
+    color: var(--warning-color);
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+/* How to Use Section */
+#how-to-use ol {
+    list-style: decimal;
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+#how-to-use li {
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+}
+
+/* Footer */
+footer {
+    background: linear-gradient(135deg, #2d3748, var(--primary-color));
+    color: white;
+    text-align: center;
+    padding: 3.5rem 0;
+    margin-top: 4rem;
+}
+
+.footer-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+footer p {
+    margin-bottom: 0;
+}
+
+/* General footer links (specific override for this section) */
+footer a {
+    color: #bee3f8; /* Lighter blue for footer links */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+footer a:hover, footer a:focus {
+    color: white; /* Make them white on hover/focus */
+    text-decoration: underline;
+}
+
+/* Social Links - Text Based */
+.social-links {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 1.8rem;
+    margin-bottom: 1.8rem;
+}
+
+.social-links a {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-decoration: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+footer .social-links a:hover,
+footer .social-links a:focus {
+    color: var(--accent-color);
+    transform: translateY(-2px);
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--accent-color);
+}
+
+/* Global Focus Outline */
+*:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 3px;
+    border-radius: 4px;
+}
+
+/* Specific button/link focus overrides for better integration with existing styles */
+.btn:focus-visible,
+.bookmarklet-link:focus-visible,
+.copy-bookmarklet:focus-visible,
+footer a:focus-visible,
+.social-links a:focus-visible {
+    outline: 3px solid var(--accent-color);
+    outline-offset: 2px;
+}
+
+/* Accessibility Media Queries */
+@media (prefers-contrast: high) {
+    :root {
+        --primary-color: #000000;
+        --secondary-color: #0066cc;
+        --text-color: #000000;
+        --bg-card: #ffffff;
+        --border-color: #000000;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+    }
+
+    .hero-section {
+        padding: 2.5rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .card {
+        padding: 1.5rem;
+    }
+
+    h2 {
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+
+    .bookmarklet-container {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .bookmarklet-link {
+        width: 100%;
+        min-width: unset; /* Remove min-width for full flexibility */
+    }
+}
