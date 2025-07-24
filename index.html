@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Bookmarklet Toolkit - Abdullah Nawaz</title>
+    <meta name="description" content="A self-hosted, mobile-friendly suite of JavaScript bookmarklets for rapid, in-page accessibility analysis. Built by Abdullah Nawaz.">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <div class="container">
+            <h1 class="site-title">A11y Bookmarklet Toolkit</h1>
+            <p class="site-tagline">Rapid in-page accessibility analysis for everyone.</p>
+        </div>
+    </header>
+
+    <main id="main-content" class="container" tabindex="-1">
+        <section class="hero-section">
+            <h2 class="hero-title">Unlock Instant Accessibility Insights</h2>
+            <p class="hero-description">The Accessibility Bookmarklet Toolkit is a collection of powerful JavaScript tools you can run directly in your browser, even on mobile. Quickly check heading structures, landmark regions, alt text, and more!</p>
+            <div class="cta-buttons">
+                <a href="#bookmarklets" class="btn btn-primary">Get the Bookmarklets</a>
+                <a href="#how-to-use" class="btn btn-secondary">How to Use</a>
+            </div>
+        </section>
+
+        <section id="bookmarklets" class="page-section">
+            <h2>The Toolkit Components</h2>
+            <p>Drag the links below to your browser's bookmarks bar on desktop, or follow the "How to Use" instructions for mobile.</p>
+
+            <div class="card bookmarklet-card">
+                <h3>1. Heading Structure Checker</h3>
+                <p class="description">Outlines all `&lt;h1&gt;` through `&lt;h6&gt;` elements, displays their level, and warns about skipped heading levels (e.g., `&lt;h1&gt;` directly to `&lt;h4&gt;`).</p>
+                <p class="use-case"><strong>Use Case:</strong> Quickly identify improper heading hierarchy, redundant or missing levels, and verify page structure complies with WCAG 2.2 — SC 1.3.1 (Info and Relationships).</p>
+                <div class="bookmarklet-container">
+                    <a href="javascript:(function(){
+                        // Bookmarklet code will go here
+                        const STYLE_ID = 'a11y-bookmarklet-heading-styles';
+                        const LABEL_CLASS = 'a11y-bookmarklet-heading-label';
+                        const WARNING_CLASS = 'a11y-bookmarklet-heading-warning';
+                        const OUTLINE_CLASS = 'a11y-bookmarklet-heading-outline';
+                        const INJECTED_CONTAINER_CLASS = 'a11y-bookmarklet-injected-container';
+
+                        // Cleanup function
+                        const cleanup = () => {
+                            const existingStyle = document.getElementById(STYLE_ID);
+                            if (existingStyle) existingStyle.remove();
+                            document.querySelectorAll(`.${LABEL_CLASS}, .${WARNING_CLASS}`).forEach(el => el.remove());
+                            document.querySelectorAll(`.${OUTLINE_CLASS}`).forEach(el => {
+                                el.classList.remove(OUTLINE_CLASS); // Remove outline class
+                                el.style.removeProperty('outline'); // Ensure inline outline is removed if present
+                            });
+                        };
+
+                        // Run cleanup before applying new styles
+                        cleanup();
+
+                        // Inject styles
+                        const style = document.createElement('style');
+                        style.id = STYLE_ID;
+                        style.textContent = `
+                            .${OUTLINE_CLASS} {
+                                outline: 3px solid #E53E3E !important; /* Red */
+                                box-shadow: 0 0 0 3px rgba(229, 62, 62, 0.5) !important;
+                            }
+                            .${LABEL_CLASS} {
+                                background: #ECC94B !important; /* Yellow */
+                                color: #2D3748 !important; /* Dark grey */
+                                font-weight: bold !important;
+                                margin-right: 4px !important;
+                                padding: 2px 6px !important;
+                                font-family: sans-serif !important;
+                                font-size: 0.8rem !important;
+                                line-height: 1 !important;
+                                display: inline-block !important;
+                                border-radius: 4px !important;
+                                position: relative !important;
+                                z-index: 2147483647 !important; /* Max z-index */
+                            }
+                            .${WARNING_CLASS} {
+                                background: #C53030 !important; /* Crimson */
+                                color: white !important;
+                                padding: 2px 6px !important;
+                                margin-left: 6px !important;
+                                font-size: 0.8rem !important;
+                                font-weight: 600 !important;
+                                border-radius: 4px !important;
+                                font-family: sans-serif !important;
+                                line-height: 1 !important;
+                                display: inline-block !important;
+                                position: relative !important;
+                                z-index: 2147483647 !important; /* Max z-index */
+                            }
+                        `;
+                        document.head.appendChild(style);
+
+                        const headings = document.querySelectorAll("h1, h2, h3, h4, h5, h6");
+                        let prevLevel = 0;
+                        let alertMessage = "";
+
+                        if (headings.length === 0) {
+                            alertMessage = "No headings found on this page.";
+                        } else {
+                            headings.forEach((h, i) => {
+                                const level = parseInt(h.tagName.substring(1));
+                                h.classList.add(OUTLINE_CLASS); // Apply outline via class
+
+                                const label = document.createElement("span");
+                                label.textContent = ` [${h.tagName}] `;
+                                label.classList.add(LABEL_CLASS);
+                                label.setAttribute('aria-hidden', 'true'); // Hide from screen readers
+                                h.insertBefore(label, h.firstChild);
+
+                                if (prevLevel !== 0 && level > prevLevel + 1) {
+                                    const warn = document.createElement("span");
+                                    warn.textContent = `⚠ Skipped h${prevLevel} to h${level}`;
+                                    warn.classList.add(WARNING_CLASS);
+                                    warn.setAttribute('aria-hidden', 'true'); // Hide from screen readers
+                                    h.appendChild(warn);
+                                    if (alertMessage === "") alertMessage = "Skipped heading levels detected! Check console for details."; // Only set once
+                                    console.warn(`Accessibility Bookmarklet: Skipped heading level from h${prevLevel} to h${level} at:`, h);
+                                }
+
+                                prevLevel = level;
+                            });
+                            if (alertMessage === "") alertMessage = "Heading structure analysis complete.";
+                        }
+                        alert(alertMessage);
+                    }())" class="btn btn-primary bookmarklet-link">
+                        Drag to Bookmarks: Heading Checker
+                    </a>
+                    <button class="btn btn-tertiary copy-bookmarklet" data-bookmarklet-id="heading-checker">Copy Code</button>
+                </div>
+            </div>
+
+            <div class="card bookmarklet-card">
+                <h3>2. Landmark Region Highlighter</h3>
+                <p class="description">Outlines and annotates all ARIA landmark roles and HTML5 semantic regions (e.g., `&lt;main&gt;`, `&lt;nav&gt;`, `role="main"`).</p>
+                <p class="use-case"><strong>Use Case:</strong> Verify presence and accuracy of semantic structure. Supports WCAG 2.2 — SC 1.3.1 (Info and Relationships) and 2.4.1 (Bypass Blocks).</p>
+                <div class="bookmarklet-container">
+                    <a href="javascript:(function(){
+                        // Bookmarklet code will go here
+                        const STYLE_ID = 'a11y-bookmarklet-landmark-styles';
+                        const TAG_CLASS = 'a11y-bookmarklet-landmark-tag';
+                        const OUTLINE_CLASS = 'a11y-bookmarklet-landmark-outline';
+
+                        // Cleanup function
+                        const cleanup = () => {
+                            const existingStyle = document.getElementById(STYLE_ID);
+                            if (existingStyle) existingStyle.remove();
+                            document.querySelectorAll(`.${TAG_CLASS}`).forEach(el => el.remove());
+                            document.querySelectorAll(`.${OUTLINE_CLASS}`).forEach(el => {
+                                el.classList.remove(OUTLINE_CLASS);
+                                el.style.removeProperty('outline'); // Ensure inline outline is removed if present
+                            });
+                        };
+
+                        // Run cleanup before applying new styles
+                        cleanup();
+
+                        // Inject styles
+                        const style = document.createElement('style');
+                        style.id = STYLE_ID;
+                        style.textContent = `
+                            .${OUTLINE_CLASS} {
+                                outline: 4px dashed #3182CE !important; /* Blue */
+                                box-shadow: 0 0 0 4px rgba(49, 130, 206, 0.5) !important;
+                            }
+                            .${TAG_CLASS} {
+                                background: #3182CE !important; /* Blue */
+                                color: white !important;
+                                position: relative !important;
+                                z-index: 2147483647 !important; /* Max z-index */
+                                padding: 2px 8px !important;
+                                font-family: sans-serif !important;
+                                font-size: 0.75rem !important;
+                                line-height: 1 !important;
+                                font-weight: 600 !important;
+                                border-radius: 4px 4px 0 0 !important;
+                                display: inline-block !important; /* Ensure padding works */
+                                margin-bottom: -4px !important; /* Pull up to hide dashed border */
+                            }
+                        `;
+                        document.head.appendChild(style);
+
+                        const roles = [
+                            {selector: 'main, [role="main"]', label: "Main"},
+                            {selector: 'nav, [role="navigation"]', label: "Navigation"},
+                            {selector: 'header, [role="banner"]', label: "Header"},
+                            {selector: 'footer, [role="contentinfo"]', label: "Footer"},
+                            {selector: 'aside, [role="complementary"]', label: "Aside"},
+                            {selector: '[role="region"]', label: "Region"},
+                            {selector: '[role="search"]', label: "Search"}, // Added common roles
+                            {selector: '[role="form"]', label: "Form"}
+                        ];
+
+                        let foundCount = 0;
+                        roles.forEach(({selector, label}) => {
+                            document.querySelectorAll(selector).forEach(el => {
+                                el.classList.add(OUTLINE_CLASS);
+                                const tag = document.createElement("div");
+                                tag.textContent = `🧱 Landmark: ${label}`;
+                                tag.classList.add(TAG_CLASS);
+                                tag.setAttribute('aria-hidden', 'true'); // Hide from screen readers
+                                el.prepend(tag);
+                                foundCount++;
+                            });
+                        });
+
+                        if (foundCount === 0) alert("No common landmarks found on this page.");
+                        else alert(`Landmarks highlighted: ${foundCount} regions found.`);
+
+                    }())" class="btn btn-primary bookmarklet-link">
+                        Drag to Bookmarks: Landmark Checker
+                    </a>
+                    <button class="btn btn-tertiary copy-bookmarklet" data-bookmarklet-id="landmark-checker">Copy Code</button>
+                </div>
+            </div>
+
+            <div class="card bookmarklet-card">
+                <h3>3. Image Alt Text Checker</h3>
+                <p class="description">Outlines all `&lt;img&gt;` elements, color-coding them based on whether they have an `alt` attribute, and highlights missing or empty alt text.</p>
+                <p class="use-case"><strong>Use Case:</strong> Supports WCAG 2.2 — SC 1.1.1 (Non-text Content) by identifying missing, empty, or potentially generic `alt` attributes.</p>
+                <div class="bookmarklet-container">
+                    <a href="javascript:(function(){
+                        // Bookmarklet code will go here
+                        const STYLE_ID = 'a11y-bookmarklet-alt-styles';
+                        const OUTLINE_CLASS_GOOD = 'a11y-bookmarklet-alt-good';
+                        const OUTLINE_CLASS_MISSING = 'a11y-bookmarklet-alt-missing';
+                        const OUTLINE_CLASS_EMPTY = 'a11y-bookmarklet-alt-empty';
+
+                        // Cleanup function
+                        const cleanup = () => {
+                            const existingStyle = document.getElementById(STYLE_ID);
+                            if (existingStyle) existingStyle.remove();
+                            document.querySelectorAll(`.${OUTLINE_CLASS_GOOD}, .${OUTLINE_CLASS_MISSING}, .${OUTLINE_CLASS_EMPTY}`).forEach(el => {
+                                el.classList.remove(OUTLINE_CLASS_GOOD, OUTLINE_CLASS_MISSING, OUTLINE_CLASS_EMPTY);
+                                el.style.removeProperty('outline'); // Ensure inline outline is removed if present
+                                el.style.removeProperty('box-shadow');
+                                if (el.dataset.originalTitle) { // Restore original title if any
+                                    el.title = el.dataset.originalTitle;
+                                    delete el.dataset.originalTitle;
+                                } else {
+                                    el.removeAttribute('title');
+                                }
+                            });
+                        };
+
+                        // Run cleanup before applying new styles
+                        cleanup();
+
+                        // Inject styles
+                        const style = document.createElement('style');
+                        style.id = STYLE_ID;
+                        style.textContent = `
+                            .${OUTLINE_CLASS_GOOD} {
+                                outline: 3px solid #38A169 !important; /* Green */
+                                box-shadow: 0 0 0 3px rgba(56, 161, 105, 0.5) !important;
+                            }
+                            .${OUTLINE_CLASS_MISSING} {
+                                outline: 5px solid #E53E3E !important; /* Red */
+                                box-shadow: 0 0 0 5px rgba(229, 62, 62, 0.5) !important;
+                            }
+                            .${OUTLINE_CLASS_EMPTY} {
+                                outline: 5px solid #ED8936 !important; /* Orange */
+                                box-shadow: 0 0 0 5px rgba(237, 137, 54, 0.5) !important;
+                            }
+                        `;
+                        document.head.appendChild(style);
+
+                        const imgs = document.querySelectorAll("img");
+                        let missingAlt = 0;
+                        let emptyAlt = 0;
+                        let totalImages = imgs.length;
+
+                        imgs.forEach(img => {
+                            // Store original title before overwriting
+                            if (img.title) {
+                                img.dataset.originalTitle = img.title;
+                            }
+
+                            if (img.hasAttribute("alt")) {
+                                if (img.alt.trim() === "") {
+                                    img.classList.add(OUTLINE_CLASS_EMPTY);
+                                    img.title = "⚠ EMPTY ALT TEXT (decorative image likely)";
+                                    emptyAlt++;
+                                } else {
+                                    img.classList.add(OUTLINE_CLASS_GOOD);
+                                    img.title = `ALT: "${img.alt}"`;
+                                }
+                            } else {
+                                img.classList.add(OUTLINE_CLASS_MISSING);
+                                img.title = "❌ MISSING ALT ATTRIBUTE";
+                                missingAlt++;
+                            }
+                        });
+
+                        if (totalImages === 0) {
+                            alert("No images found on this page.");
+                        } else {
+                            alert(`Alt Text Check Complete:\n\nTotal Images: ${totalImages}\nMissing Alt Attributes: ${missingAlt}\nEmpty Alt Text (alt=""): ${emptyAlt}\n\n(Hover over images for details. Missing alt attributes are RED, empty alt text is ORANGE, good alt text is GREEN.)`);
+                        }
+                    }())" class="btn btn-primary bookmarklet-link">
+                        Drag to Bookmarks: Alt Text Checker
+                    </a>
+                    <button class="btn btn-tertiary copy-bookmarklet" data-bookmarklet-id="alt-checker">Copy Code</button>
+                </div>
+            </div>
+
+            <div class="card bookmarklet-card">
+                <h3>4. Focusable Element Viewer (Tab Order Preview)</h3>
+                <p class="description">Highlights all tabbable/focusable elements (links, buttons, form controls) and potentially numbers them in their detected tab order. This helps verify keyboard accessibility and correct focus flow.</p>
+                <p class="use-case"><strong>Use Case:</strong> Verify WCAG 2.2 — SC 2.4.3 (Focus Order) and 2.1.1 (Keyboard Accessible) by visualizing the natural tab sequence.</p>
+                <div class="bookmarklet-container">
+                    <a href="javascript:(function(){
+                        alert('This bookmarklet is under development! Coming soon...');
+                        // Placeholder for future implementation
+                    }())" class="btn btn-primary bookmarklet-link">
+                        Drag to Bookmarks: Focus Checker (Coming Soon)
+                    </a>
+                    <button class="btn btn-tertiary copy-bookmarklet" data-bookmarklet-id="focus-checker">Copy Code</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-to-use" class="page-section">
+            <h2>How to Use</h2>
+            <div class="card">
+                <h3>On Desktop Browsers (Chrome, Firefox, Edge, Safari):</h3>
+                <ol>
+                    <li>Ensure your bookmarks bar is visible (usually Ctrl+Shift+B or Cmd+Shift+B).</li>
+                    <li>Drag the "Drag to Bookmarks" link for the desired tool directly onto your bookmarks bar.</li>
+                    <li>Navigate to any webpage you wish to test.</li>
+                    <li>Click the bookmarklet in your bookmarks bar to run the accessibility check.</li>
+                    <li>To remove the highlights, simply reload the page or click the bookmarklet again (if it supports toggling).</li>
+                </ol>
+            </div>
+            <div class="card">
+                <h3>On iOS (Safari):</h3>
+                <ol>
+                    <li>Tap the "Copy Code" button next to the bookmarklet you want.</li>
+                    <li>Open Safari and navigate to any webpage (e.g., Google.com).</li>
+                    <li>Tap the "Share" icon (square with an arrow pointing up).</li>
+                    <li>Scroll down and tap "Add Bookmark".</li>
+                    <li>**Important:** In the "Add Bookmark" dialog, change the "Name" to something short and descriptive (e.g., "A11y Headings").</li>
+                    <li>**Crucially:** Tap on the URL field and delete the existing URL. Paste the JavaScript code you copied in step 1 into the URL field.</li>
+                    <li>Tap "Save".</li>
+                    <li>Now, whenever you are on a webpage you want to test, tap the "Bookmarks" icon (open book), find your newly created bookmarklet, and tap it to run.</li>
+                </ol>
+            </div>
+            <div class="card">
+                <h3>On Android (Chrome):</h3>
+                <p>While direct drag-and-drop isn't supported, copying the JavaScript is the easiest method:</p>
+                <ol>
+                    <li>Tap the "Copy Code" button next to the bookmarklet you want.</li>
+                    <li>Open Chrome and type `javascript:` into the URL bar, but **do not press Enter yet.**</li>
+                    <li>Paste the copied JavaScript code directly after `javascript:` in the URL bar.</li>
+                    <li>Press Enter. This will run the bookmarklet once.</li>
+                    <li>To save it for later, you might need to use a browser that supports bookmarklet creation, or paste it each time. (Some Android browsers might support saving edited bookmarks, but Chrome on Android often makes it difficult to edit the URL field of a bookmark to contain `javascript:`.)</li>
+                </ol>
+                <p class="note">**Note:** Android Chrome often strips the `javascript:` prefix when copying/pasting. Ensure you re-add it manually.</p>
+            </div>
+        </section>
+
+        <section class="card cta-section">
+            <h2>Have an Accessibility Challenge?</h2>
+            <p>As a professional accessibility consultant, I offer comprehensive auditing, testing, and training services.</p>
+            <a href="https://madnessinnsmouth.github.io/#contact" class="btn btn-success">Get in Touch for a Consultation</a>
+        </section>
+    </main>
+
+    <footer role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 Abdullah Nawaz - Professional Accessibility Consultant</p>
+                <p>Committed to creating inclusive digital experiences for everyone</p>
+                <p>
+                    <a href="https://madnessinnsmouth.github.io/accessibility.html">Accessibility Statement</a> |
+                    <a href="https://madnessinnsmouth.github.io/privacy.html">Privacy Policy</a> |
+                    <a href="https://madnessinnsmouth.github.io/terms.html">Terms & Conditions</a>
+                </p>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/abdullah-nawaz-627298344?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" target="_blank" rel="noopener noreferrer" aria-label="Connect with me on LinkedIn">
+                        LinkedIn
+                    </a>
+                    <a href="https://discord.gg/pK9kKNqT7c" target="_blank" rel="noopener noreferrer" aria-label="Join my Discord server">
+                        Discord
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- General page-level script ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // Focus main content for accessibility on page load
+            const mainContent = document.getElementById('main-content');
+            if (mainContent) {
+                mainContent.setAttribute('tabindex', '-1');
+                mainContent.focus();
+            }
+
+            // Copy bookmarklet code functionality
+            document.querySelectorAll('.copy-bookmarklet').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const bookmarkletId = button.dataset.bookmarkletId;
+                    const linkElement = button.closest('.bookmarklet-container').querySelector('.bookmarklet-link');
+                    let jsCode = linkElement.href;
+
+                    // Remove "javascript:" prefix for easier copying
+                    if (jsCode.startsWith('javascript:')) {
+                        jsCode = jsCode.substring('javascript:'.length);
+                    }
+
+                    try {
+                        await navigator.clipboard.writeText(jsCode);
+                        button.textContent = 'Copied!';
+                        setTimeout(() => {
+                            button.textContent = 'Copy Code';
+                        }, 2000);
+                    } catch (err) {
+                        console.error('Failed to copy bookmarklet code:', err);
+                        alert('Failed to copy code. Please copy manually from the link attribute.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
